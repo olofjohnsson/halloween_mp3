@@ -91,15 +91,10 @@ void setup() {
     Serial.println("OK");
 
     // Set volume to maximum (0 to 30).
-    player.volume(30);
-
-    // Play the "0001.mp3" in the "mp3" folder on the SD card
-    player.playMp3Folder(1);
-    delay(200);
-    while(digitalRead(BUSY_PIN) == LOW)
-    {
-      scaryBlink_1();
-    }
+    player.volume(15);
+    delay(500);
+    player.play(7);
+    delay(500);
 
   } else {
     Serial.println("Connecting to DFPlayer Mini failed!");
@@ -134,6 +129,8 @@ void button1_activity(int button1State)
     if (button1State == LOW) {
       digitalWrite(LED_SPIDER_1, LOW);
       scaryBlink_1();
+      player.volume(30);
+      delay(200);
       player.playMp3Folder(3);
       delay(200);
       while(digitalRead(BUSY_PIN) == LOW)
@@ -195,11 +192,6 @@ void button4_activity(int button4State)
   }
   if ((millis() - lastButton4DebounceTime) > debounceDelay) {
     if (button4State == LOW) {
-      digitalWrite(LED_SPIDER_4, LOW);
-      digitalWrite(GODIS_PIN, HIGH);
-      player.loop(6);
-      delay(500);
-      gameOverBlink();
       gameState = GAME_OVER;
     }
   }
@@ -207,17 +199,25 @@ void button4_activity(int button4State)
 
 void game_over()
 {
-      digitalWrite(LED_SPIDER_4, LOW);
-      digitalWrite(GODIS_PIN, HIGH);
-      player.loop(6);
-      delay(500);
-      for(int i=0;i<10;i++)
-      {
-        gameOverBlink();
-      }
-      digitalWrite(GODIS_PIN, LOW);
-      digitalWrite(LED_SPIDER_1, HIGH);
-      gameState = WAIT_FOR_SPIDER_1;
+  digitalWrite(LED_SPIDER_4, LOW);
+  digitalWrite(GODIS_PIN, HIGH);
+  player.volume(20);
+  delay(200);
+  player.play(8);
+  delay(500);
+
+  for(int i=0;i<30;i++)
+  {
+    gameOverBlink();
+  }
+  digitalWrite(GODIS_PIN, LOW);
+  digitalWrite(LED_SPIDER_1, HIGH);
+  delay(500);
+  player.volume(15);
+  delay(200);
+  player.play(7);
+  delay(500);
+  gameState = WAIT_FOR_SPIDER_1;
 }
 
 void readButtons(void)
@@ -231,10 +231,9 @@ void readButtons(void)
   {
     case INIT:
       Serial.println("INIT");
-      player.loop(6);
+      player.play(7);
       gameState = WAIT_FOR_SPIDER_1;
       digitalWrite(LED_SPIDER_1, HIGH);
-      
       break;
     case WAIT_FOR_SPIDER_1:
       Serial.println("WAIT_FOR_SPIDER_1");
